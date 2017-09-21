@@ -31,6 +31,22 @@ public class TicketDAO {
 
             Ticket ticket = framedGraph.addVertex("class:Ticket", Ticket.class);
             ticket.setCreationDate(new Date());
+            ticket.setTicketPrice(ticketDTO.getTicketPrice());
+            ticket.setDepartureDate(ticketDTO.getDepartureDate());
+            ticket.setArrivalDate(ticketDTO.getArrivalDate());
+            ticket.setSeatNumber(ticketDTO.getSeatNumber());
+            ticket.setStatus(ticketDTO.getStatus());
+            ticket.setTitle(ticketDTO.getTitle());
+            ticket.setNames(ticketDTO.getNames());
+            ticket.setSurname(ticketDTO.getSurname());
+            ticket.setEmail(ticketDTO.getEmail());
+            ticket.setPhoneNumber(ticketDTO.getPhoneNumber());
+            ticket.setGender(ticketDTO.getGender());
+            ticket.setDisability(ticketDTO.getDisability());
+            ticket.setHasInfant(ticketDTO.isHasInfant());
+            ticket.setEmergencyContactNames(ticketDTO.getEmergencyContactRelationship());
+            ticket.setEmergencyContactCellNumber(ticketDTO.getEmergencyContactCellNumber());
+            ticket.setEmergencyContactRelationship(ticketDTO.getEmergencyContactRelationship());
 
             graph.commit();
 
