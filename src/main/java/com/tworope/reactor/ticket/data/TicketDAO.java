@@ -21,7 +21,7 @@ import java.util.Date;
  */
 public class TicketDAO {
 
-    public boolean saveBid(TicketDTO ticketDTO) {
+    public boolean saveTicket(TicketDTO ticketDTO) {
         OrientGraphFactory factory = new ReactiveFrame().getOrientGraphFactory();
         FramedGraph<OrientGraph> framedGraph = null;
         try {
