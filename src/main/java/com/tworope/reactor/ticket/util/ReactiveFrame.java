@@ -17,7 +17,7 @@ import com.tinkerpop.frames.modules.javahandler.JavaHandlerModule;
  */
 public class ReactiveFrame {
 
-    OrientGraphFactory factory = new OrientGraphFactory("remote:localhost/reactor", "root", "2011menus");
+    OrientGraphFactory factory = new OrientGraphFactory("remote:localhost/tworope", "root", "2011menus");
     FramedGraph<OrientGraph> framedGraph;
     OrientGraph graph = null;
 
