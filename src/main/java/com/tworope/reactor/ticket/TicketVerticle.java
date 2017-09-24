@@ -5,6 +5,8 @@
  */
 package com.tworope.reactor.ticket;
 
+import com.tworope.reactor.ticket.data.TicketDAO;
+import com.tworope.reactor.ticket.dto.TicketDTO;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -15,6 +17,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
+import java.util.Date;
 import java.util.logging.Logger;
 
 /**
@@ -32,7 +35,7 @@ public class TicketVerticle extends AbstractVerticle {
         Vertx vertx = Vertx.vertx();
         vertx.deployVerticle(new TicketVerticle());
     }
-    
+
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         startHTTPServer();
@@ -48,7 +51,8 @@ public class TicketVerticle extends AbstractVerticle {
                 .allowedHeader("Content-Type"));
         router.route().handler(BodyHandler.create());
 
-        router.get("/").handler(this::homeRoute);
+        router.get("/ticket").handler(this::homeRoute);
+        router.post("/ticket").handler(this::savePaymentRoute);
 
         server.requestHandler(router::accept).listen(8080, ar -> {
             if (ar.succeeded()) {
@@ -64,21 +68,77 @@ public class TicketVerticle extends AbstractVerticle {
     }
 
     private void homeRoute(RoutingContext context) {
-        vertx.<String>executeBlocking(future -> {
+
+        vertx.<TicketDTO>executeBlocking(future -> {
+            
+            TicketDTO ticketDTO = null;
+            
             try {
+                TicketDAO ticketDAO = new TicketDAO();
+                ticketDTO = ticketDAO.getAllTickets();
+                
                 System.out.println("Same block code goes here");
+                
             } catch (Exception e) {
                 System.out.println("Error occurred " + e);
             }
-            future.complete("some return string from execution");
+            future.complete(ticketDTO);
         }, response -> {
             if (response.succeeded()) {
-                context.response().putHeader(CONTENT_TYPE_TEXT, JSON_CONTENT_TYPE).end(Json.encodePrettily(new JsonObject().put("success", response.cause())));
+                context.response().putHeader(CONTENT_TYPE_TEXT, JSON_CONTENT_TYPE)
+                        .end(Json.encodePrettily(response.result()));
             } else {
-                context.response().putHeader(CONTENT_TYPE_TEXT, JSON_CONTENT_TYPE).end(Json.encodePrettily(new JsonObject().put("error", response.cause())));
+                context.response().putHeader(CONTENT_TYPE_TEXT, JSON_CONTENT_TYPE)
+                        .end(Json.encodePrettily(new JsonObject().put("error", response.cause())));
                 System.out.println("Something happened " + response.cause());
             }
         });
 
+    }
+
+    private void savePaymentRoute(RoutingContext context) {
+
+        vertx.executeBlocking(future -> {
+
+            TicketDTO ticketDTO = new TicketDTO();
+            
+            ticketDTO.setCreationDate(new Date());
+            ticketDTO.setArrivalDate(new Date(context.request().getParam("arrivalDate")));
+            ticketDTO.setDepartureDate(new Date(context.request().getParam("departureDate")));
+            ticketDTO.setTicketPrice(Double.parseDouble(context.request().getParam("price")));
+            ticketDTO.setSeatNumber(Integer.parseInt(context.request().getParam("seatNumber")));
+            ticketDTO.setStatus(context.request().getParam("status"));
+            ticketDTO.setTitle(context.request().getParam("title"));
+            ticketDTO.setNames(context.request().getParam("names"));
+            ticketDTO.setSurname(context.request().getParam("surname"));
+            ticketDTO.setEmail(context.request().getParam("email"));
+            ticketDTO.setPhoneNumber(context.request().getParam("phoneNumber"));
+            ticketDTO.setGender(context.request().getParam("gender"));
+            ticketDTO.setDisability(context.request().getParam("disability"));
+            ticketDTO.setHasInfant(true);
+            ticketDTO.setEmergencyContactNames(context.request().getParam("emergencyContactNames"));
+            ticketDTO.setEmergencyContactCellNumber(context.request().getParam("emergencyContactCellNumber"));
+            ticketDTO.setEmergencyContactRelationship(context.request().getParam("emergencyContactRelationship"));
+
+            try {
+                TicketDAO ticketDAO = new TicketDAO();
+                ticketDAO.saveTicket(ticketDTO);
+
+                System.out.println("Same block code goes here");
+
+            } catch (Exception e) {
+                System.out.println("Error occurred " + e);
+            }
+            future.complete();
+        }, response -> {
+            if (response.succeeded()) {
+                context.response().putHeader(CONTENT_TYPE_TEXT, JSON_CONTENT_TYPE)
+                        .end(Json.encodePrettily(new JsonObject().put("success", response.result())));
+            } else {
+                context.response().putHeader(CONTENT_TYPE_TEXT, JSON_CONTENT_TYPE)
+                        .end(Json.encodePrettily(new JsonObject().put("error", response.cause())));
+                System.out.println("Something happened " + response.cause());
+            }
+        });
     }
 }

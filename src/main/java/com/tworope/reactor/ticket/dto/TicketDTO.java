@@ -134,7 +134,7 @@ public class TicketDTO {
         this.disability = disability;
     }
 
-    public boolean isHasInfant() {
+    public boolean getHasInfant() {
         return hasInfant;
     }
 

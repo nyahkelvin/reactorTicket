@@ -17,9 +17,10 @@ public class Test {
     
     public static void main(String [] args){
         TicketDAO t = new TicketDAO();
-        Test test = new Test();
-        
-        t.saveTicket(test.createTicketDTO());
+        t.getAllTickets();
+//        Test test = new Test();
+//        
+//        t.saveTicket(test.createTicketDTO());
     }
     
     public TicketDTO createTicketDTO(){

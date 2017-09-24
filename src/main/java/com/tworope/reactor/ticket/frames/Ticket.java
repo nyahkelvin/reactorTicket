@@ -112,9 +112,9 @@ public interface Ticket extends VertexFrame {
     public void setEmergencyContactRelationship(String emergencyContactRelationship);
     
     @Property("has_infant")
-    public boolean gethasInfant();
+    public boolean getHasInfant();
     
-    @Property("disability")
+    @Property("has_infant")
     public void setHasInfant(boolean hasInfant);
     
     
